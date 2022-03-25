@@ -43,6 +43,7 @@ graph_viewer = [
     [sg.Text("This is your graph")],
     [sg.Canvas(key="-GRAPH-")],
     [sg.Text(size=(40, 1), key="-ERROR-")],
+    [sg.Button('Exit', size=(10, 1), pad=((280, 0), 3), font='Helvetica 14')]
 ]
 
 # ----- Full layout -----
@@ -55,14 +56,21 @@ layout = [
 ]
 
 window = sg.Window("Math Game", layout)
+event, values = window.read(timeout=0)
+canvas_elem = window['-GRAPH-']
+canvas = canvas_elem.TKCanvas
 
-fig_agg = None
-"""Run the Event Loop"""
+fig = matplotlib.figure.Figure()
+ax = fig.add_subplot(111)
+ax.set_xlabel("X axis")
+ax.set_ylabel("Y axis")
+ax.set_xlim(0, 20)
+ax.set_ylim(0, 20)
+ax.grid()
+fig_agg = draw_figure(canvas, fig)
+
 while True:
     event, values = window.read()
-    if event == "Exit" or event == sg.WIN_CLOSED:
-        break
-    """Create function graph after click run button"""
     if event == "-RUN-":
         function = values["-FUNCTION-"]
         lower = values["-LOWER-"]
@@ -77,17 +85,27 @@ while True:
         if upper == "":
             window["-ERROR-"].update("No upper bound inserted")
             continue
-        """Check if there already exist graph"""
-        if fig_agg is not None:
-            delete_fig_agg(fig_agg)
-        """Try to make function"""
-        try:
-            fig = matplotlib.figure.Figure(figsize=(5, 4), dpi=100)
-            x = np.arange(float(lower), float(upper), .01)
-            fig.add_subplot(111).plot(x, eval(function))
-            fig_agg = draw_figure(window["-GRAPH-"].TKCanvas, fig)
-            window["-ERROR-"].update(" ")
-        except:
-            window["-ERROR-"].update("Error input function")
+        break
+
+"""Run the Event Loop"""
+lower = float(eval(lower))
+upper = float(eval(upper))
+x_list = np.arange(lower, upper, (upper-lower)/100)
+fun_list = [eval(function) for x in x_list]
+for i in range(len(fun_list) + 1):
+    event, values = window.read(timeout=0)
+    if event in ('Exit', None):
+        exit(69)
+    ax.cla()
+    ax.set_xlim(lower, upper)
+    ax.set_ylim(-10, 20)
+    ax.grid()
+    ax.plot(x_list[:i], fun_list[:i],  color='red')
+    fig_agg.draw()
+
+while True:
+    event, values = window.read()
+    if event in ('Exit', None, sg.WIN_CLOSED):
+        exit(69)
 
 window.close()
