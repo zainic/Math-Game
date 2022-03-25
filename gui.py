@@ -18,16 +18,21 @@ def delete_fig_agg(fig_agg):
     fig_agg.get_tk_widget().forget()
     plt.close('all')
     
-# First the window layout in 2 columns
-
 create_formula = [
     [
-        sg.Text("Write Your Formula Down"),
+        sg.Text("Write Your Equation Down [ex: 2*t + sin(t)]"),
     ],
     [
-        sg.InputText(
-            size=(40, 20), enable_events=True, key="-FUNCTION-"
-        )
+        sg.Text("Function : "),
+        sg.InputText(size=(40, 20), enable_events=True, key="-FUNCTION-"),
+    ],
+    [
+        sg.Text("Lower Bound : "),
+        sg.InputText(size=(40, 20), enable_events=True, key="-LOWER-"),
+    ],
+    [
+        sg.Text("Upper Bound : "),
+        sg.InputText(size=(40, 20), enable_events=True, key="-UPPER-"),
     ],
     [
         sg.Button("Run/Create Graph", key="-RUN-")
@@ -53,7 +58,7 @@ layout = [
 window = sg.Window("Math Game", layout)
 
 fig_agg = None
-# Run the Event Loop
+"""Run the Event Loop"""
 while True:
     event, values = window.read()
     if event == "Exit" or event == sg.WIN_CLOSED:
@@ -61,8 +66,22 @@ while True:
     """Create function graph after click run button"""
     if event == "-RUN-":
         function = values["-FUNCTION-"]
+        lower = values["-LOWER-"]
+        upper = values["-UPPER-"]
+        """Check Emptyness"""
+        if function == "":
+            window["-ERROR-"].update("No function inserted")
+            continue
+        if lower == "":
+            window["-ERROR-"].update("No lower bound inserted")
+            continue
+        if upper == "":
+            window["-ERROR-"].update("No upper bound inserted")
+            continue
+        """Check if there already exist graph"""
         if fig_agg is not None:
             delete_fig_agg(fig_agg)
+        """Try to make function"""
         try:
             fig = matplotlib.figure.Figure(figsize=(5, 4), dpi=100)
             t = np.arange(0, 3, .01)
