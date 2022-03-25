@@ -71,6 +71,8 @@ fig_agg = draw_figure(canvas, fig)
 
 while True:
     event, values = window.read()
+    if event in ('Exit', None, sg.WIN_CLOSED):
+        exit(69)
     if event == "-RUN-":
         function = values["-FUNCTION-"]
         lower = values["-LOWER-"]
@@ -94,7 +96,7 @@ x_list = np.arange(lower, upper, (upper-lower)/100)
 fun_list = [eval(function) for x in x_list]
 for i in range(len(fun_list) + 1):
     event, values = window.read(timeout=0)
-    if event in ('Exit', None):
+    if event in ('Exit', None, sg.WIN_CLOSED):
         exit(69)
     ax.cla()
     ax.set_xlim(lower, upper)
