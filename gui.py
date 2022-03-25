@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib
 import matplotlib.pyplot as plt
+from zmath import *
 
 matplotlib.use("TkAgg")
 
