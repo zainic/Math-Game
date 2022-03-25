@@ -84,7 +84,7 @@ while True:
         """Try to make function"""
         try:
             fig = matplotlib.figure.Figure(figsize=(5, 4), dpi=100)
-            t = np.arange(0, 3, .01)
+            t = np.arange(float(lower), float(upper), .01)
             fig.add_subplot(111).plot(t, eval(function))
             fig_agg = draw_figure(window["-GRAPH-"].TKCanvas, fig)
             window["-ERROR-"].update(" ")
